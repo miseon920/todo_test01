@@ -3,6 +3,7 @@ import React, { useEffect, useRef, useState } from "react";
 const App = () => {
   const [todo, setTodo] = useState({}); //값을 두개이상넣어야 하므로 객체로 변경
   const [todolist, setTodolist] = useState([]);
+  const [ko, setKo] = useState(true);
   const num = useRef(1);
   const handlerInput = (e) => {
     const { name, value } = e.target; //객체는 이름이 중요함!
@@ -16,7 +17,10 @@ const App = () => {
   };
   const onlyKorean = (e) => {
     const pattern = /[a-z0-9]|[ \[\]{}()<>?|`~!@#$%^&*-_+=,.;:\"'\\]/g;
-    e.target.value = e.target.value.replace(pattern, "");
+    if (pattern.test(e.target.value)) {
+      alert("한글만 입력가능합니다!");
+      e.target.value = e.target.value.replace(pattern, "");
+    }
   };
   const handlerList = (e) => {
     if (todo.title.length < 5) {
