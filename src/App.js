@@ -1,96 +1,110 @@
 import React, { useEffect, useRef, useState } from "react";
+import { isCompositeComponent } from "react-dom/test-utils";
+import TodoList from "./TodoList";
+import TodoWrite from "./TodoWrite";
+import { Routes, Route, Link, NavLink, useNavigate } from "react-router-dom";
 
 const App = () => {
-  const [todo, setTodo] = useState({}); //값을 두개이상넣어야 하므로 객체로 변경
-  const [todolist, setTodolist] = useState([]);
-  const [ko, setKo] = useState(true);
+  const [word, setWord] = useState({
+    title: "",
+    content: "",
+  });
+  const [list, setList] = useState([]);
+
   const num = useRef(1);
-  const handlerInput = (e) => {
-    const { name, value } = e.target; //객체는 이름이 중요함!
-    // e.target.value.replace(/[^0-9]/g, "");
-    setTodo({
-      ...todo,
+  //const 변수 = useRef(); 변수 = 변수+1 로 고유키값을 만들수있음
+  //current라는 프로퍼티가 있음
+  const inputtitle = useRef(null);
+  const inputcontent = useRef(null);
+
+  const navi = useNavigate();
+
+  const handlerWord = (e) => {
+    const { name, value } = e.target;
+    setWord({
+      ...word,
       [name]: value,
-      id: num.current,
-      done: false, //삭제를 하기위한 상태값
+      id: num.current, //current라는 프로퍼티로 id 지정
     });
+    /*
+      객체 비구조할당
+      const object = { a: 1, b: 2 };
+
+      const { a, b } = object;
+
+      console.log(a); // 1
+      console.log(b); // 2
+    */
   };
-  const onlyKorean = (e) => {
-    const pattern = /[a-z0-9]|[ \[\]{}()<>?|`~!@#$%^&*-_+=,.;:\"'\\]/g;
-    if (pattern.test(e.target.value)) {
-      alert("한글만 입력가능합니다!");
-      e.target.value = e.target.value.replace(pattern, "");
+  const handlerList = () => {
+    const hg = /^[ㄱ-ㅎ-가-힣]*$/;
+    if (!word.title || !word.content) {
+      alert("내용을 입력해주세요");
     }
-  };
-  const handlerList = (e) => {
-    if (todo.title.length < 5) {
-      alert("5자이상 입력");
+    if (word.title.length < 5) {
+      alert("5자 이상 입력");
+      setWord({
+        ...word,
+        title: "",
+      });
+      inputtitle.current.focus();
       return;
     }
-    setTodolist([...todolist, todo]);
-    //num.current = num.current + 1;
+    if (!hg.test(word.title)) {
+      alert("한글만 입력하세요");
+      setWord({
+        ...word,
+        title: "",
+      });
+      inputtitle.current.focus();
+      return;
+    }
+    if (word.content.length < 5) {
+      alert("5자 이상 입력");
+      setWord({
+        ...word,
+        content: "",
+      });
+      inputcontent.current.focus();
+      return;
+    }
+    setList([...list, word]);
     num.current++;
-  };
-  const handlerDelete = (id) => {
-    //삭제
-    //console.log(id);
-    setTodolist(todolist.filter((it) => id !== it.id));
-  };
-  const handlerModifiy = (id) => {
-    //수정
-    setTodolist(
-      todolist.map((it) =>
-        id === it.id
-          ? {
-              ...it,
-              done: !it.done,
-            }
-          : it
-      )
-    );
+    navi("/Board");
   };
   useEffect(() => {
-    setTodo({
+    setWord({
       title: "",
       content: "",
     });
-    // console.log(todo);
-  }, [todolist]);
+  }, [list]);
   return (
     <div>
-      <ul>
-        {todolist.map((it, idx) => (
-          <li key={it.id}>
-            <input
-              type="checkbox"
-              onChange={() => {
-                handlerModifiy(it.id);
-                console.log(it.done);
-              }}
+      <nav>
+        <NavLink to="/">home</NavLink>
+        <NavLink to="/Board">Board</NavLink>
+        <NavLink to="/Write">Write</NavLink>
+      </nav>
+      <Routes>
+        <Route path="/" element={<TodoList list={list} setList={setList} />} />
+        <Route
+          path="/Board"
+          element={<TodoList list={list} setList={setList} />}
+        />
+        <Route
+          path="/Write"
+          element={
+            <TodoWrite
+              list={list}
+              word={word}
+              handlerWord={handlerWord}
+              handlerList={handlerList}
+              inputtitle={inputtitle}
+              inputcontent={inputcontent}
             />
-            {idx + 1}
-            {it.title} / {it.content}
-            <button onClick={() => handlerDelete(it.id)}>삭제</button>
-          </li>
-        ))}
-      </ul>
-      <input
-        type="text"
-        onChange={handlerInput}
-        name="title"
-        value={todo.title || ""}
-        onInput={onlyKorean}
-      />
-      <input
-        type="text"
-        onChange={handlerInput}
-        name="content"
-        value={todo.content || ""}
-        //input의 value가 undefined일 때 ''가 들어올 수 있도록 하면 된다.
-        onInput={onlyKorean}
-      />
-      <button onClick={handlerList}>글쓰기</button>
-      {/* {console.log(todo, num)} */}
+          }
+        />
+      </Routes>
     </div>
   );
 };

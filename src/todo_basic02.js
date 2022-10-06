@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 
-const todo_basic02 = () => {
+const Todo_basic02 = () => {
   const [todo, setTodo] = useState({}); //값을 두개이상넣어야 하므로 객체로 변경
   const [todolist, setTodolist] = useState([]);
   useEffect(() => {
@@ -50,7 +50,7 @@ const todo_basic02 = () => {
   );
 };
 
-export default todo_basic02;
+export default Todo_basic02;
 
 /*
 https://jeonghwan-kim.github.io/dev/2022/03/29/react-form-and-formik.html
