@@ -20,11 +20,24 @@ const App = () => {
       ...input,
       //[e.target.name]: e.target.value,
       [name]: value,
-      date: new Date().toLocaleDateString(), //객체이므로 날짜를 가져오는 string으로 바꿈
+      date: new Date().toLocaleDateString().replaceAll(".", ""), //객체이므로 날짜를 가져오는 string으로 바꿈
       id: num.current,
     });
   };
   const handlerBt = () => {
+    console.log("input", input);
+    if (!input.name) {
+      alert("이름을 입력해주세요");
+      return;
+    }
+    if (!input.title) {
+      alert("제목을 입력해주세요");
+      return;
+    }
+    if (!input.content) {
+      alert("내용을 입력해주세요");
+      return;
+    }
     setBoardList([...boardList, input]);
     num.current++;
     navi("/board");
@@ -39,7 +52,7 @@ const App = () => {
     window.localStorage.setItem("boardList", JSON.stringify(boardList));
   }, [boardList]);
   return (
-    <div>
+    <div className="inner">
       <header>
         <nav>
           <ul>
