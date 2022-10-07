@@ -4,6 +4,7 @@ import List from "./board/List";
 import View from "./board/View";
 import Write from "./board/Write";
 import Modify from "./board/Modify";
+import "./board/board.scss";
 
 const App = () => {
   const [input, setInput] = useState({});
@@ -111,4 +112,5 @@ JSON.stringify란?
 
 stringify 메소드는 json 객체를 String 객체로 변환시켜 줍니다.
 
+npm install sass
 */
